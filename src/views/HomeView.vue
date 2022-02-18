@@ -33,7 +33,7 @@ export default {
       sketchData: {
         byteFindVal: 100,
         byteRepVal: 104,
-        imgSrc: 'public/bear.jpg',
+        imgSrc: require('src/assets/bear.jpg'),
         imgW: 1200,
         imgH: 900,
         sketchParent:'sketch1',
