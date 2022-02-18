@@ -22,6 +22,7 @@
 
 <script>
 import CanvasMain from '@/components/CanvasMain.vue'
+import imgUrl from '../assets/bear.jpg'
 
 export default {
   components: {
@@ -33,7 +34,7 @@ export default {
       sketchData: {
         byteFindVal: 100,
         byteRepVal: 104,
-        imgSrc: './src/assets/bear.jpg',
+        imgSrc: imgUrl,
         imgW: 1200,
         imgH: 900,
         sketchParent:'sketch1',
