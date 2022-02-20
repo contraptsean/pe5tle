@@ -69,6 +69,14 @@
 
   </li>
 
+  
+  <li class="nav-item">
+    <h2 class="h4">LoadQuality</h2>
+
+    <label for="loadQuality">Quality of input:</label>
+    <input type="number" id="loadQuality" v-model="sketchData.loadQuality" name="loadQuality"
+       min="0" max="100">
+  </li>
 
 
 
@@ -109,6 +117,7 @@ export default {
         numRandomBytes: 10,
         limitBytesStart: 20,
         limitBytesEnd:100,
+        loadQuality: 100,
         imgSrc: imgUrl,
         imgW: 1200,
         imgH: 900,
