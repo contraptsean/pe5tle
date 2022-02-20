@@ -2,9 +2,10 @@
 <template>
 <!----->
 <div class="container-fluid">
-  <div class="d-flex  flex-row">
+<div class="row">
+<div class="col-sm-3">
 
-<ul class="nav flex-column flex-fill justify-content-start">
+<ul class="nav flex-column justify-content-start">
 
   <h1 class="display-3 text-success border-bottom">Pe5tle</h1>
 
@@ -82,11 +83,12 @@
 
 </ul>
 
+</div><!--end col-->
 
 
 
       
-  <main class="flex-fill">
+  <main class="col-sm-9">
     <CanvasMain v-bind="sketchData" />
   </main>
 
@@ -121,7 +123,7 @@ export default {
         imgSrc: imgUrl,
         imgW: 1200,
         imgH: 900,
-        sketchParent:'sketch1',
+        sketchParent:'glitchCanvas',
         glitchExtType:'jpg',
         glitchType:'hexReplace',
 

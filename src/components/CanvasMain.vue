@@ -1,6 +1,6 @@
 <template>
 <div class="container mt-3">
-    <div id="sketch1" class="p5sketch"></div>
+    <div id="glitchCanvas" class="p5sketch"></div>
 </div>
 
 </template>
@@ -24,6 +24,7 @@ export default {
 		limitBytesStart: Number,
 		limitBytesEnd: Number,
 	},
+
 	data() {
 		return { myp5:{} }
 	},
@@ -40,26 +41,30 @@ export default {
 			this.myp5 = new p5( function(sketch){
 				sketch.glitch;
 
-				sketch.setup = () => {
-
-					sketch.createCanvas(p.imgW, p.imgH);
-					sketch.background(0);
-					sketch.imageMode(sketch.CENTER);
+				sketch.preload = () => {
 					sketch.glitch = new Glitch(sketch);
 					sketch.glitch.loadType(p.glitchExtType);
 					sketch.glitch.loadQuality(loadQuality);
 					sketch.glitch.loadImage(p.imgSrc, function(){
 						sketch.glitched();
 					});
-					sketch.glitch.errors(false);
-					sketch.disableFriendlyErrors = true;
 
 				}
 
-			sketch.draw = () => {
-				//console.log(sketch.glitch);
-				sketch.image(sketch.glitch.image, sketch.width/2, sketch.height/2);
+				sketch.setup = () => {
+					sketch.createCanvas(p.imgW, p.imgH);
+					sketch.background(0);
+					sketch.imageMode(sketch.CENTER);
+					sketch.glitch.errors(false);
+					sketch.disableFriendlyErrors = true;
+					sketch.noLoop();
+				}
 
+			sketch.draw = () => {
+				console.log('draw');
+				
+				sketch.image(sketch.glitch.image, sketch.width/2, sketch.height/2);
+				
 				}
 
 		sketch.glitched = function() {
@@ -84,8 +89,8 @@ export default {
 
 		}, parent);
 			
-		},
 	},
+},
 
 	mounted() {
 	this.buildSketch(this.sketchParent, this.$props);
