@@ -1,0 +1,14 @@
+/* General styles & mobile view */
+
+.image-upload>label {
+    cursor: pointer;
+}
+
+.image-upload>input {
+    display: none;
+}
+
+
+/* Hide Mobile Nav, Setup Desktop Grid, Show Desktop Nav  */
+
+@media (min-width: 768px) {}
