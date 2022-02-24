@@ -8,6 +8,14 @@
     display: none;
 }
 
+#saveWrapper {
+    cursor: pointer;
+}
+
+.fixed-bottom {
+    background: rgba(255, 255, 255, 0.7)/* Green background with 30% opacity */
+}
+
 
 /* Hide Mobile Nav, Setup Desktop Grid, Show Desktop Nav  */
 
