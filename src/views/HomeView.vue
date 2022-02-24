@@ -39,13 +39,18 @@
           </a>
 
           <ul class="list-unstyled" :class="{'dropdown-menu': !isMobile}" aria-labelledby="navbarDropdownMenuLink">
-            <li><button class="dropdown-item" @click="currentGlitch('hex-replace-nav', 'hexReplace', 'jpg')">Hex JPG</button></li>
-            <li><button class="dropdown-item" @click="currentGlitch('random-replace-nav', 'randomBytes', 'jpg')">Random JPG Replace</button></li>
-            <li><button class="dropdown-item" @click="currentGlitch('hex-replace-nav', 'hexReplace', 'webp')">Hex WEBP</button></li>
-            <li><button class="dropdown-item" @click="currentGlitch('random-replace-nav', 'randomBytes', 'webp')">Ran WEBP Replace</button></li>
+            <li><button class="dropdown-item" data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show"
+             @click="currentGlitch('hex-replace-nav', 'hexReplace', 'jpg')">Hex JPG</button></li>
+            <li><button class="dropdown-item" data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show"
+             @click="currentGlitch('random-replace-nav', 'randomBytes', 'jpg')">Random JPG Replace</button></li>
+            <li><button class="dropdown-item" data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show"
+             @click="currentGlitch('hex-replace-nav', 'hexReplace', 'webp')">Hex WEBP</button></li>
+            <li><button class="dropdown-item" data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show"
+             @click="currentGlitch('random-replace-nav', 'randomBytes', 'webp')">Ran WEBP Replace</button></li>
 
-            <li><button class="dropdown-item" @click="currentGlitch('quant-table-nav', 'quantTable', 'jpg')">QuantTable JPG</button></li>
-            <li><button class="dropdown-item" @click="currentGlitch('random-replace-nav', 'randomBytes', 'jpg')">Random JPG Replace</button></li>
+            <li><button class="dropdown-item" data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show"
+             @click="currentGlitch('quant-table-nav', 'quantTable', 'jpg')">QuantTable JPG</button></li>
+
             <li><router-link class="dropdown-item" to="/about">About this</router-link></li>
           </ul>
         </li>
