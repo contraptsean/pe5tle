@@ -3,7 +3,7 @@
   <!----->
   <div class="container-fluid">
     <div class="row">
-      <div class="col-md-3">
+      <div class="col-lg-3">
         <!--top nav-->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
           <div class="container-fluid">
@@ -75,8 +75,8 @@
           <!--nav container-->
         </nav>
         <div :class="{ 'fixed-bottom': isMobile }">
-          <nav class="navbar navbar-dark">
-            <div class="container-fluid">
+          <nav class="navbar navbar-dark pt-0">
+            <div class="container-fluid d-block">
               <ul class="navbar-nav">
                 <form>
 
@@ -103,7 +103,7 @@
                       min="0"
                       max="255"
                     />
-                  <p>(0-255)</p>
+                  <p class="flex-grow-1">(0-255)</p>
                   </li>
                     <!-- intensity slider fopr random replace functions -->
                   <li class="nav-item d-flex align-items-center justify-content-start " v-if="tab === 'random-replace-nav' && sketchData.glitchExtType == 'jpg'" >
@@ -229,9 +229,11 @@
           </nav>    <!--end bottom nav-->
         </div>  <!--end fixed bottom wrapper-->
       </div><!--end col-->
-      <div class="col-md-9">
+
+      <div class="col-lg-9">
         <CanvasMain v-bind="sketchData" />
       </div>
+
     </div>  <!--end ro9w-->
   </div><!--end contain-->
 </template>
@@ -294,6 +296,7 @@ export default {
       this.tab = tab;
       this.sketchData.glitchType = type;
       this.sketchData.glitchExtType = ext;
+      this.sketchData.blended = false;
       if (ext == "webp") {
         this.sketchData.loadQuality = 99;
       }
@@ -314,7 +317,7 @@ export default {
     //mobile computed value to make a few things more readable
   computed: {
     isMobile() {
-      return this.sketchData.windowWidth <= 768;
+      return this.sketchData.windowWidth <= 992;
     },
   },
 };

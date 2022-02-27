@@ -27,20 +27,20 @@ body,
     color: #e234ab;
 }
 
-.image-upload>label {
+#app .image-upload>label {
     cursor: pointer;
 }
 
-.image-upload>input {
+#app .image-upload>input {
     display: none;
 }
 
-.saveWrapper {
+#app .saveWrapper {
     cursor: pointer;
 }
 
-.fixed-bottom {
-    background: rgba(28, 35, 51, 0.8)
+#app .fixed-bottom {
+    opacity: 0.8;
 }
 
 
