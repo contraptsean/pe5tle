@@ -29,6 +29,14 @@
               <li><a href="https://p5.glitch.me/">p5.glitch</a></li>
               <li><a href="https://getbootstrap.com/">Bootstrap 5</a></li>
             </ul>
+<div class="row justify-content-center">
+
+            <div class="col-sm-4 border border-info my-3 pt-3">
+
+              <p>You can holla on instagram, <a href="https://www.instagram.com/three.raccoons.in.a.hoodie/">@three.raccoons.in.a.hoodie</a> with art, questions, or follows. </p>
+              <p>Feel free to tag your work <a href="https://www.instagram.com/explore/tags/pe5tle/">#pe5tle</a> if you post something that uses it ¯\_(ツ)_/¯ </p>
+            </div>
+</div>
 
           
             <p>For more about this project or creating glitch art in general::</p>
