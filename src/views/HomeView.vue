@@ -7,16 +7,19 @@
     <div class="col-md-3">
 
       <!--top nav-->
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container-fluid">
     <a class="navbar-brand" href="#">Pe5tle</a>
-      <div class="image-upload mt-2 border">
-      <label for="formFile" class="form-label">New Image <i class="bi bi-plus-circle ms-2"></i></label>
+      <button class="image-upload btn btn-outline-primary">
+      <label for="formFile" class="form-label h4">
+        <i class="bi bi-plus-circle me-2"></i>
+        <i class="bi bi-card-image"></i>
+      </label>
       <input class="form-control" type="file" id="formFile"
       accept="image/png, image/jpeg" @change="onFileChange">
-    </div>
+    </button>
 
-<div class="d-lg-none" id="saveWrapper">
+<div class="d-lg-none saveWrapper" id="saveWrapperMobile">
     </div>
     
 
@@ -25,7 +28,7 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
 
-  <ul class="navbar-nav">
+  <ul class="navbar-nav ms-auto">
         
 <!--         
         <li class="nav-item">
@@ -34,7 +37,8 @@
 
         <li class="nav-item"
         :class="{'dropdown': !isMobile}">
-          <a class="nav-link dropdown-toggle d-none d-lg-block " href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle d-none d-lg-block " href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" data-bs-auto-close="true"
+          aria-expanded="false">
             Glitch Modes
           </a>
 
@@ -64,13 +68,17 @@
   </div><!--nav container-->
 </nav>
 <div :class="{'fixed-bottom' : isMobile}">
-<nav class="navbar navbar-light">
+
+<nav class="navbar navbar-dark">
   <div class="container-fluid">
 
 
 <ul class="navbar-nav">
 <form>
-  <li class="nav-item d-flex flex-row align-items-center justify-content-start" v-if="(tab === 'hex-replace-nav')">
+ 
+
+  <li class="nav-item d-flex align-items-center justify-content-start" v-if="(tab === 'hex-replace-nav')">
+
     <label class="form-label" for="findVal">Replace</label>
     <input class="form-control form-control-sm" type="number" id="findVal" v-model="sketchData.byteFindVal" name="findVal"
        min="0" max="255">
@@ -78,9 +86,11 @@
     <label for="repValue">with</label>
     <input class="form-control form-control-sm" type="number" id="repValue" v-model="sketchData.byteRepVal" name="repValue"
        min="0" max="255">
-       (0-255)
-
   </li>
+  <p v-if="(tab === 'hex-replace-nav')">
+         (0-255)
+       </p>
+  
 
 
   <li class="nav-item d-flex align-items-center justify-content-start" v-if="(tab === 'random-replace-nav')">
@@ -106,19 +116,19 @@
   
   <li v-if="(sketchData.glitchExtType == 'jpg') && (sketchData.glitchType !== 'quantTable')" class="nav-item d-flex align-items-center justify-content-start">
     <label class="form-label" for="loadQuality">Quality</label>
-    <input type="range" id="loadQuality" v-model="sketchData.loadQuality" name="loadQuality"
+    <input type="range" id="loadQuality" v-model.number="sketchData.loadQuality" name="loadQuality"
        min="0" max="100">
   </li>
 
   <li v-else-if="(sketchData.glitchExtType == 'webp')" class="nav-item d-flex align-items-center justify-content-start">
     <label class="form-label" for="loadQuality">Quality</label>
-    <input type="range" id="loadQuality" v-model="sketchData.loadQuality" name="loadQuality"
+    <input type="range" id="loadQuality" v-model.number="sketchData.loadQuality" name="loadQuality"
        min="0" max="99">
   </li>
 
   <li v-else-if="(sketchData.glitchType == 'quantTable')" class="nav-item d-flex align-items-center justify-content-start">
     <label class="form-label" for="loadQuality">Quality</label>
-    <input type="range" id="loadQuality" v-model="sketchData.loadQuality" name="loadQuality"
+    <input type="range" id="loadQuality" v-model.number="sketchData.loadQuality" name="loadQuality"
        min="96" max="100">
   </li>
 
@@ -136,13 +146,16 @@
     <div class="col">
 
 
-<select class="form-select form-select-sm" aria-label=".form-select-sm example" v-model="sketchData.blendMode">
+<select class="form-select form-select-sm" aria-label=".form-select-sm example" v-model="sketchData.blendMode" @change="sketchData.blended = true">
   <option v-for="blendMode in blendModes" :value="blendMode" :key="blendMode.id">{{blendMode}}</option>
 </select>
   </div>
     </div>
 
 </li>
+
+<div class="d-none d-lg-block saveWrapper" id="saveWrapperDesktop">
+    </div>
 
 </form>
 </ul>
@@ -182,8 +195,10 @@ export default {
         numRandomBytes: 10,
         limitBytesStart: 20,
         limitBytesEnd:100,
-        loadQuality: "100",
+        loadQuality: 100,
         imgSrc: imgUrl,
+        imgW: 1200,
+        imgH: 900,
         sketchParent:'glitchCanvas',
         glitchType:'hexReplace',      
         glitchExtType:'jpg',
@@ -204,17 +219,23 @@ export default {
       const file = e.target.files[0];
       let i = new Image();
       this.sketchData.imgSrc = URL.createObjectURL(file);   
-      i.src = this.sketchData.imgSrc 
+      i.src = this.sketchData.imgSrc;
+      i.onload = () => {
+        this.sketchData.imgW = i.naturalWidth;
+        this.sketchData.imgH = i.naturalHeight;
+      }
+
+
     },
     currentGlitch(tab, type, ext) {
       this.tab = tab;
       this.sketchData.glitchType = type;
       this.sketchData.glitchExtType = ext;
       if (ext == 'webp') {
-        this.sketchData.loadQuality = "99";
+        this.sketchData.loadQuality = 99;
       }
       if (ext == 'jpg')
-        this.sketchData.loadQuality = "100";
+        this.sketchData.loadQuality = 100;
     },
 
 
@@ -240,7 +261,3 @@ export default {
 }
   
 </script>
-
-<style scoped>
-
-</style>

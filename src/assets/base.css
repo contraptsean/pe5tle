@@ -1,5 +1,31 @@
 /* General styles & mobile view */
 
+body,
+.dropdown-menu,
+.dropdown-item,
+#app .navbar-dark {
+    background: #1c2333 !important;
+    color: #d6c2f9;
+}
+
+#app p,
+#app label,
+#app .btn,
+#app .nav-link,
+#app .dropdown-item {
+    font-family: 'Tienne', serif;
+    font-size: 1.1rem;
+}
+
+#app .navbar-brand {
+    font-family: 'Comfortaa', cursive;
+    color: #e234ab;
+}
+
+#app .dropdown-item:hover {
+    color: #e234ab;
+}
+
 .image-upload>label {
     cursor: pointer;
 }
@@ -8,12 +34,12 @@
     display: none;
 }
 
-#saveWrapper {
+.saveWrapper {
     cursor: pointer;
 }
 
 .fixed-bottom {
-    background: rgba(255, 255, 255, 0.7)/* Green background with 30% opacity */
+    background: rgba(28, 35, 51, 0.8)
 }
 
 

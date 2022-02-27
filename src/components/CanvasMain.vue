@@ -4,12 +4,20 @@
     	<div id="glitchCanvas" class="p5sketch pt-1"></div>
 	</main>
 </div>
-<Teleport v-if="isMounted" to="#saveWrapper">
-	<div @click="saveImage">
+<Teleport v-if="isMounted" to="#saveWrapperMobile">
+	<button type="button" class="btn btn-secondary" @click="saveImage">
 	Save
-	<i class="bi bi-save"></i>
-	</div>
+	<i class="bi bi-save ms-1"></i>
+	</button>
 </Teleport>
+
+<Teleport v-if="isMounted" to="#saveWrapperDesktop">
+	<button type="button" class="btn btn-secondary mt-3" @click="saveImage">
+	Save Full Size
+	<i class="bi bi-save ms-2"></i>
+	</button>
+</Teleport>
+
 </template>
 
 
@@ -23,8 +31,10 @@ export default {
 		byteFindVal: Number,
 		byteRepVal: Number,
 		numRandomBytes: Number,
-		loadQuality: String,
+		loadQuality: Number,
 		imgSrc: String,
+		imgW: Number,
+		imgH: Number,
 		sketchParent: String,
 		glitchExtType: String,
 		glitchType: String,
@@ -39,13 +49,14 @@ export default {
 		return { 
 			myp5:{},
 			isMounted: false,
+			buffer: {},
 			 }
 	},
 
   	methods: {
 
 	buildSketch(elm, p){
-		console.log(this.$refs.sketchWrapper.clientWidth)
+		//console.log(this.$refs.sketchWrapper.clientWidth)
 		let containerWidth = this.$refs.sketchWrapper.clientWidth;
 		let containerHeight = window.innerHeight;
 		let parent = document.getElementById(elm);
@@ -54,11 +65,11 @@ export default {
 		let loadQuality = this.loadQuality / 100;
 		let isMobile = this.isMobile;
 		let img0;
+		let capture;
 
 			this.myp5 = new p5( function(sketch){
 				//sketch.glitch;
-				
-
+			
 				sketch.preload = () => {
 					sketch.glitch = new Glitch(sketch);
 					sketch.glitch.loadType(p.glitchExtType);
@@ -67,34 +78,24 @@ export default {
 					sketch.glitch.loadImage(p.imgSrc, function(){
 						sketch.glitched();
 					});
-
 				}
 
 				sketch.setup = () => {
-					sketch.createCanvas((containerWidth - 10 ), (containerHeight - 10));
-
+					sketch.createCanvas((containerWidth), (containerHeight - 10));					
 					sketch.pixelDensity(1)
 					if (isMobile) {
 						sketch.imageMode(sketch.CORNER);
-						console.log('Cornered');
 					} else {
 						sketch.imageMode(sketch.CENTER);
-												console.log('Centered');
-
 					}
 					sketch.glitch.errors(false);
 					sketch.disableFriendlyErrors = true;
 					sketch.noLoop();
+
 				}
 
 				sketch.draw = () => {
-					if (isMobile) {
-						sketch.glitch.image.resize(containerWidth, 0);
-						img0.resize(containerWidth, 0);
-					} else {
-						sketch.glitch.image.resize(0, containerHeight);
-						img0.resize(0, containerHeight);
-					}
+
 					if (p.blended) {
 						switch (p.blendMode) {
 
@@ -104,6 +105,7 @@ export default {
 							
 							case 'DARKEST' :
 								sketch.glitch.image.blend(img0, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, sketch.DARKEST);
+								
 							break;
 
 							case 'DIFFERENCE' :
@@ -125,15 +127,24 @@ export default {
 						}
 
 					}
+
+					sketch.glitch.loadImage(sketch.glitch.image);
+					sketch.glitch.buffer = sketch.glitch.bytes.slice();
+						
 					if (isMobile) {
+						sketch.glitch.image.resize(containerWidth, 0);
+						img0.resize(containerWidth, 0);
 						sketch.image(sketch.glitch.image, 0,0);
 					} else {
+						sketch.glitch.image.resize(0, containerHeight);
+						img0.resize(0, containerHeight);
 						sketch.image(sketch.glitch.image, sketch.glitch.image.width/2, sketch.glitch.image.height/2);
 					}
 					
 					}
 
 				sketch.glitched = function() {
+
 					sketch.glitch.limitBytes(limitBytesStart, limitBytesEnd);
 
 					switch (p.glitchType) {
@@ -149,7 +160,7 @@ export default {
 							sketch.glitch.buildImage();
 							break;
 
-							case 'quantTable' :
+						case 'quantTable' :
 							sketch.glitch.resetBytes();
 							// modify jpg quantization table 2
 							sketch.glitch.replaceHex('ffdb00430101', 'ffdb004301ff'); // soo colorful!
@@ -159,14 +170,27 @@ export default {
 
 					
 				}
-
+				
 
 		}, parent);
 			
 	},
 	saveImage() {
-		this.myp5.glitch.saveSafe();
-	}
+		this.myp5.glitch.bytes = this.myp5.glitch.buffer.slice();
+		this.myp5.glitch.buildImage(function(img){
+				// custom timestamp for exporting
+					let d = new Date();
+					d.setTime( d.getTime() - new Date().getTimezoneOffset()*60*1000 );
+					let ts = d.toISOString().replace(/[^0-9]/g, '').slice(0, -3);
+					img.save('pe5tle_' + ts);
+			});
+
+		console.log(this.myp5);
+		console.log(this.myp5.glitch);
+
+	},
+
+
 
 },
 
@@ -195,8 +219,3 @@ export default {
 
 </script>
 
-
-
-<style scoped>
-
-</style>
