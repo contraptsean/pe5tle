@@ -60,15 +60,18 @@ Will maybe do another version after building a MVP and making a blog post about 
 
 ~~:black_heart: save full-size function!!~~
 
-:black_heart: about page
+~~:black_heart: about page~~
 
-:black_heart: refactor (onFilechange function particularly)
+~~:black_heart: refactor (onFilechange function particularly)~~
+
+:black_heart: Glitch type "branding" and icons/heading
+
+:black_heart: loading animation
 
 :black_heart: scope and make youtube video
 
 :black_heart: blog post
 
-:black_heart: Glitch type "branding" and icons/heading
 
 #### Nice to have
 
@@ -87,4 +90,7 @@ Will maybe do another version after building a MVP and making a blog post about 
 :black_heart: keep actions as an array to make multiple actions/ back button (refactor to update sketch, rather than build new?)
 
 :black_heart: maybe drawing function (restore or glitch)
+
+:black_heart: image turning function (turn image, glitch, turn back, display, to creat glitches at the top or sides)
+
 
