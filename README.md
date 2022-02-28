@@ -9,7 +9,7 @@ And love :black_heart:
 
 Special thanks to [ffd8](https://github.com/ffd8) for inspiring this project with the [p5.glitch](https://p5.glitch.me/) sub-library, and the feedback
 
-And my little brother, Leon, for thinking it was cool and giving me feedback :sunglasses:
+And my little brother, Leon, for thinking it was cool and giving me suggestions :sunglasses:
 
 ## Support
 
@@ -66,11 +66,11 @@ Will maybe do another version after building a MVP and making a blog post about 
 
 :black_heart: Glitch type "branding" and icons/heading
 
-:black_heart: loading animation
+~~:black_heart: loading animation~~
 
 :black_heart: scope and make youtube video
 
-:black_heart: blog post
+~~:black_heart: blog post~~
 
 
 #### Nice to have
@@ -83,7 +83,7 @@ Will maybe do another version after building a MVP and making a blog post about 
 
 :black_heart: logo glitch
 
-~~:black_heart: blen from original image function~~
+~~:black_heart: blend from original image function~~
 
 :black_heart: about the glitch pages/modals?
 
@@ -91,6 +91,6 @@ Will maybe do another version after building a MVP and making a blog post about 
 
 :black_heart: maybe drawing function (restore or glitch)
 
-:black_heart: image turning function (turn image, glitch, turn back, display, to creat glitches at the top or sides)
+:black_heart: image turning function (turn image, glitch, turn back, display, to create glitches at the top or sides)
 
 

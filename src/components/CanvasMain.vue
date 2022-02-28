@@ -129,8 +129,7 @@ export default {
                 break;
             }
           }
-			//load the glitched image
-          sketch.glitch.loadImage(sketch.glitch.image);
+          
 		    //make a copy of the glitched bytes in buffer to reconstitute a full size image before saving
 			//otherwise, this gets resized because of Object copying by reference
           sketch.glitch.buffer = sketch.glitch.bytes.slice();

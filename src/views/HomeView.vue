@@ -17,6 +17,7 @@
               </label>
               <input class="form-control" type="file" id="formFile" accept="image/png, image/jpeg" @change="onFileChange" />
             </button>
+            
               <!-- Mobile Save Button -->
             <div class="d-lg-none saveWrapper" id="saveWrapperMobile"></div>
 
