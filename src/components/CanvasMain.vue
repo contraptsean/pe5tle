@@ -1,6 +1,11 @@
 <template>
   <div ref="sketchWrapper">
     <main class="main" id="main">
+      <div id="p5_loading" class="loadingclass">
+        <div class="spinner-border p-5 m-5" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
       <div id="glitchCanvas" class="p5sketch pt-1"></div>
     </main>
   </div>
