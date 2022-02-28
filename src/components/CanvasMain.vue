@@ -163,7 +163,7 @@ export default {
               break;
           }
         };
-      }, parent);
+      }, elm);
     },
 	//the save function, that gets called when the save button is bonked
     saveImage() {
