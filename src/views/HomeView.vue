@@ -117,7 +117,7 @@
                   <!-- Functions -->
 
                   <!-- replace byte for targeted hex replace functions input -->
-                  <li class="nav-item d-flex align-items-center justify-content-start" v-if="tab === 'hex-reaplace-nv'">
+                  <li class="nav-item d-flex align-items-center justify-content-start" v-if="tab === 'hex-replace-nav'">
                     <label class="form-label" for="findVal">Replace</label>
                     <input
                       class="form-control form-control-sm"
