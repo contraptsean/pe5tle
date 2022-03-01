@@ -10,13 +10,7 @@
             <a class="navbar-brand" href="#">Pe5tle</a>
 
             <!-- image change button -->
-            <button class="image-upload btn btn-outline-info">
-              <label for="formFile" class="form-label h4">
-                <i class="bi bi-plus-circle me-2"></i>
-                <i class="bi bi-card-image"></i>
-              </label>
-              <input class="form-control" type="file" id="formFile" accept="image/png, image/jpeg" @change="onFileChange" />
-            </button>
+            
             
               <!-- Mobile Save Button -->
             <div class="d-lg-none saveWrapper" id="saveWrapperMobile"></div>
@@ -60,7 +54,7 @@
 
                     <li>
                       <button class="dropdown-item" data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show" 
-                      @click=" currentGlitch('quant-table-nav', 'quantTable', 'jpg') " > Smoosh </button>
+                      @click=" currentGlitch('quant-table-nav', 'quantTable', 'jpg') "> Smoosh </button>
                     </li>
 
                     <li>
@@ -80,9 +74,50 @@
             <div class="container-fluid d-block">
               <ul class="navbar-nav">
                 <form>
+                  <div class="row row-cols-lg-auto">
+
+                  <!-- <button class="image-upload btn btn-outline-info"> -->
+                    <div class="col-1 col-lg-12">
+
+                    <label for="formFile" class="form-label h4">
+                      <!-- <i class="bi bi-plus-circle"></i> -->
+                      <span class="d-none d-lg-block">Upload Image</span>
+                      <i class="bi bi-card-image d-lg-none h3"></i>
+                    </label>
+                    </div>
+                    <div class="col-11 col-lg-12">
+
+              <input class="form-control mb-lg-3" type="file" id="formFile" accept="image/png, image/jpeg" @change="onFileChange" />
+            <!-- </button> -->
+                    </div>
+                  </div>
+
+                  <!-- Headings -->
+
+                  <div v-if="tab === 'hex-replace-nav' && sketchData.glitchExtType == 'jpg'">
+                    <h2 class="d-none d-lg-block">Crush</h2>
+                  </div>
+
+                  <div v-if="tab === 'random-replace-nav' && sketchData.glitchExtType == 'jpg'">
+                    <h2 class="d-none d-lg-block">Gentle Crush</h2>
+                  </div>
+
+                  <div v-if="tab === 'hex-replace-nav' && sketchData.glitchExtType == 'webp'">
+                    <h2 class="d-none d-lg-block">Crumble</h2>
+                  </div>
+
+                  <div v-if="tab === 'random-replace-nav' && sketchData.glitchExtType == 'webp'">
+                    <h2 class="d-none d-lg-block">Chaos Crumble</h2>
+                  </div>
+
+                  <div v-if="tab === 'quant-table-nav'">
+                    <h2 class="d-none d-lg-block">Smoosh</h2>
+                  </div>
+
+                  <!-- Functions -->
 
                   <!-- replace byte for targeted hex replace functions input -->
-                  <li class=" nav-item d-flex align-items-center justify-content-start " v-if="tab === 'hex-replace-nav'" >
+                  <li class="nav-item d-flex align-items-center justify-content-start" v-if="tab === 'hex-reaplace-nv'">
                     <label class="form-label" for="findVal">Replace</label>
                     <input
                       class="form-control form-control-sm"
@@ -106,7 +141,8 @@
                     />
                   <p class="flex-grow-1">(0-255)</p>
                   </li>
-                    <!-- intensity slider fopr random replace functions -->
+
+                
                   <li class="nav-item d-flex align-items-center justify-content-start " v-if="tab === 'random-replace-nav' && sketchData.glitchExtType == 'jpg'" >
                     <label for="numRandomBytes" >Intensity:</label >
                     <input
@@ -131,9 +167,30 @@
                     />
                   </li>
 
-                  <li v-if="sketchData.glitchType !== 'quantTable'" class=" nav-item d-flex align-items-center justify-content-start " >
-                    <label class="form-label" for="limitBytesStart" >Constrain From</label >
+                  <!-- Intensity Slider for quant table string changes -->
+                  <li class="nav-item d-flex align-items-center justify-content-start " v-if="tab === 'quant-table-nav' ">
+                    <label for="quant-table-byte" >StringByte:</label >
                     <input
+                      type="range"
+                      v-model="sketchData.quantTableByte"
+                      id="quant-table-string-byte"
+                      name="quant-table-string-byte"
+                      min="1"
+                      max="4"
+                    />
+                  </li>
+
+                  <!-- Image Options -->
+                  <h2 class="d-none d-lg-block">Image Options</h2>
+
+                  <li v-if="sketchData.glitchType !== 'quantTable'" class=" nav-item d-flex align-items-center">
+
+                  <div class="row g-0">
+                    <div class="col-6">
+                      <label class="form-label" for="limitBytesStart" >Constrain From</label>
+                    </div>
+                    <div class="col-2">
+                       <input
                       class="form-control form-control-sm"
                       type="number"
                       id="limitBytes"
@@ -142,9 +199,13 @@
                       min="0"
                       max="99"
                     />
-
-                    <label class="form-label" for="limitBytesEnd">To</label>
-                    <input
+                      
+                    </div>
+                    <div class="col-1">
+                       <label class="form-label" for="limitBytesEnd">To</label>
+                    </div>
+                    <div class="col-3">
+                       <input
                       class="form-control form-control-sm"
                       type="number"
                       id="limitBytesEnd"
@@ -153,6 +214,15 @@
                       min="1"
                       max="100"
                     />
+                      
+                    </div>
+
+                    
+                   
+
+                   
+                   
+                  </div>
                   </li>
 
                   <!---quality blocks-->
@@ -192,12 +262,14 @@
                       max="100"
                     />
                   </li>
+                  <!-- Blend Options -->
+                  <h2 class="d-none d-lg-block mt-lg-2">Blend</h2>
 
-                  <!---blend options-->
-                  <li class="nav-item">
-                    <div class="row">
-                      <div class="col">
+                  <li class="">
+                    
+                      
                         <div class="form-check form-switch">
+                          <label class="form-check-label" for="flexSwitchCheckDefault" >Blend With Original Image</label>
                           <input
                             class="form-check-input"
                             type="checkbox"
@@ -205,13 +277,18 @@
                             id="flexSwitchCheckDefault"
                             v-model="sketchData.blended"
                           />
-                          <label class="form-check-label" for="flexSwitchCheckDefault" >Blend Result</label >
                         </div>
-                      </div>
-                      <div class="col">
-                        <select class="form-select form-select-sm" aria-label=".form-select-sm example" 
+                        <div class="row g-0 mt-2">
+                          <div class="col-5">
+                            <label for="blend-mode" class="form-label">Blend Mode:</label>
+
+                          </div>
+
+                          <div class="col-7">
+                               
+                        <select class="form-select form-select-sm" aria-label="blend-mode" 
                         v-model="sketchData.blendMode" 
-                        @change="sketchData.blended = true" >
+                        @change="sketchData.blended = true">
                           <option v-for="blendMode in blendModes" 
                           :value="blendMode" 
                           :key="blendMode.id"
@@ -219,8 +296,14 @@
                             {{ blendMode }}
                           </option>
                         </select>
-                      </div>
-                    </div>
+
+                          </div>
+                       
+
+                        </div>
+                     
+                        
+                      
                   </li>
 
                   <div class="d-none d-lg-block saveWrapper" id="saveWrapperDesktop" ></div>
@@ -255,6 +338,7 @@ export default {
         byteFindVal: 100,
         byteRepVal: 104,
         numRandomBytes: 10,
+        quantTableByte: "2",
         limitBytesStart: 20,
         limitBytesEnd: 100,
         loadQuality: 100,

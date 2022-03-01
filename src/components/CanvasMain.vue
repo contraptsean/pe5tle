@@ -37,6 +37,7 @@ export default {
     byteFindVal: Number,
     byteRepVal: Number,
     numRandomBytes: Number,
+    quantTableByte: String,
     loadQuality: Number,
     imgSrc: String,
     imgW: Number,
@@ -162,11 +163,29 @@ export default {
               sketch.glitch.buildImage();
               break;
 
-            case "quantTable":
-              // modify jpg quantization table
-              sketch.glitch.replaceHex("ffdb00430101", "ffdb004301ff"); // soo colorful!
+             // modify jpg quantization table
+           case "quantTable":
+              switch (p.quantTableByte) {
+                case "1":
+                  sketch.glitch.replaceHex('ffdb00430001', 'ffdb004300ff');
+                  break;
+
+                case "2":
+                  sketch.glitch.replaceHex("ffdb00430101", "ffdb004301ff"); // soo colorful!
+                  break;
+
+                  case "3":
+                  sketch.glitch.replaceHex("ffdb00430101", "ffdb00430111"); // soo colorful!
+                  break;
+
+                  case "4":
+                  sketch.glitch.replaceHex("ffdb00430001", "ffdb00430011"); // soo colorful!
+                  break;
+
+              }
+              
               sketch.glitch.buildImage();
-              break;
+              break
           }
         };
       }, parent);
