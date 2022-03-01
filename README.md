@@ -79,6 +79,8 @@ Will maybe do another version after building a MVP and making a blog post about 
 
 :black_heart: color crusher function
 
+:black_heart: change quant table function to utilize hexString = yourNumber.toString(16); to convert slider number values to hex and replace (reverse process w yourNumber = parseInt(hexString, 16);)
+
 :black_heart: other, more complex functions
 
 :black_heart: logo glitch
