@@ -128,6 +128,8 @@ export default {
                 sketch.glitch.image.blend( img0, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, sketch.SCREEN );
                 break;
             }
+          //load the glitched image if blended 
+          sketch.glitch.loadImage(sketch.glitch.image);
           }
           
 		    //make a copy of the glitched bytes in buffer to reconstitute a full size image before saving
