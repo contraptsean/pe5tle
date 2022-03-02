@@ -58,6 +58,11 @@
                     </li>
 
                     <li>
+                      <button class="dropdown-item" data-bs-toggle="collapse" data-bs-target=".navbar-collapse.show" 
+                      @click=" currentGlitch('quant-table-nav', 'quantTable2', 'jpg') "> Dark Smoosh </button>
+                    </li>
+
+                    <li>
                       <router-link class="dropdown-item" to="/about">
                       About this
                       </router-link>
@@ -172,11 +177,11 @@
                     <label for="quant-table-byte" >StringByte:</label >
                     <input
                       type="range"
-                      v-model="sketchData.quantTableByte"
+                      v-model.number="sketchData.quantTableByte"
                       id="quant-table-string-byte"
                       name="quant-table-string-byte"
-                      min="1"
-                      max="4"
+                      min="0"
+                      max="255"
                     />
                   </li>
 
@@ -338,7 +343,7 @@ export default {
         byteFindVal: 100,
         byteRepVal: 104,
         numRandomBytes: 10,
-        quantTableByte: "2",
+        quantTableByte:10,
         limitBytesStart: 20,
         limitBytesEnd: 100,
         loadQuality: 100,

@@ -37,7 +37,7 @@ export default {
     byteFindVal: Number,
     byteRepVal: Number,
     numRandomBytes: Number,
-    quantTableByte: String,
+    quantTableByte: Number,
     loadQuality: Number,
     imgSrc: String,
     imgW: Number,
@@ -67,6 +67,7 @@ export default {
       let parent = document.getElementById(elm);
       let limitBytesStart = this.limitBytesStart / 100;
       let limitBytesEnd = this.limitBytesEnd / 100;
+      let quantTableByte = ('0' + this.quantTableByte.toString(16)).slice(-2);
       let loadQuality = this.loadQuality / 100;
       let isMobile = this.isMobile;
       let img0;
@@ -165,27 +166,19 @@ export default {
 
              // modify jpg quantization table
            case "quantTable":
-              switch (p.quantTableByte) {
-                case "1":
-                  sketch.glitch.replaceHex('ffdb00430001', 'ffdb004300ff');
-                  break;
-
-                case "2":
-                  sketch.glitch.replaceHex("ffdb00430101", "ffdb004301ff"); // soo colorful!
-                  break;
-
-                  case "3":
-                  sketch.glitch.replaceHex("ffdb00430101", "ffdb00430111"); // soo colorful!
-                  break;
-
-                  case "4":
-                  sketch.glitch.replaceHex("ffdb00430001", "ffdb00430011"); // soo colorful!
-                  break;
-
-              }
               
-              sketch.glitch.buildImage();
-              break
+                  sketch.glitch.replaceHex("ffdb00430101", "ffdb004301" + quantTableByte); // soo colorful!
+                  console.log(quantTableByte)
+                  sketch.glitch.buildImage();
+                  break;
+
+            case "quantTable2" :
+                sketch.glitch.replaceHex('ffdb00430001', 'ffdb004300' + quantTableByte);
+                sketch.glitch.buildImage();
+                break;
+
+              
+              
           }
         };
       }, parent);
