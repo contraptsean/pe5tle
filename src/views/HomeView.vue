@@ -174,13 +174,13 @@
 
                   <!-- Intensity Slider for quant table string changes -->
                   <li class="nav-item d-flex align-items-center justify-content-start " v-if="tab === 'quant-table-nav' ">
-                    <label for="quant-table-byte" >StringByte:</label >
+                    <label for="quant-table-byte" >Intensity:</label >
                     <input
                       type="range"
                       v-model.number="sketchData.quantTableByte"
                       id="quant-table-string-byte"
                       name="quant-table-string-byte"
-                      min="0"
+                      min="10"
                       max="255"
                     />
                   </li>
@@ -343,7 +343,7 @@ export default {
         byteFindVal: 100,
         byteRepVal: 104,
         numRandomBytes: 10,
-        quantTableByte:10,
+        quantTableByte:125,
         limitBytesStart: 20,
         limitBytesEnd: 100,
         loadQuality: 100,
