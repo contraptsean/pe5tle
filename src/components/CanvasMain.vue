@@ -31,6 +31,8 @@
 <script>
 //p5 import
 import p5 from "p5";
+//debounce
+import { debounce } from 'vue-debounce'
 
 export default {
   props: {
@@ -209,12 +211,24 @@ export default {
   watch: {
     $props: {
       handler(newValue) {
-        this.myp5.remove();
-        this.buildSketch(this.sketchParent, newValue);
+        this.debouncedWatch(newValue);
+        
       },
       deep: true,
     },
   },
+
+  created() {
+    this.debouncedWatch = debounce((newValue,) => {
+      this.myp5.remove();
+      this.buildSketch(this.sketchParent, newValue);
+    }, 500);
+  },
+  beforeUnmount() {
+    this.debouncedWatch.cancel();
+  },
+
+
   //computing a mobile value to make the code more readable
   computed: {
     isMobile() {

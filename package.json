@@ -10,6 +10,7 @@
     "dependencies": {
         "p5": "^1.4.1",
         "vue": "^3.2.29",
+        "vue-debounce": "^3.0.2",
         "vue-router": "^4.0.12"
     },
     "devDependencies": {
