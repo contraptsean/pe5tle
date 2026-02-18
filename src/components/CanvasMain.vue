@@ -1,240 +1,241 @@
 <template>
-  <div ref="sketchWrapper">
-    <main class="main" id="main">
-      <div id="p5_loading" class="loadingclass">
-        <div class="spinner-border p-5 m-5" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-      </div>
-      <div id="glitchCanvas" class="p5sketch pt-1"></div>
-    </main>
+  <div ref="sketchWrapper" class="canvas-wrapper">
+    <div id="p5_loading" class="canvas-loading">
+      <div class="canvas-spinner"></div>
+    </div>
+    <div id="glitchCanvas" class="canvas-sketch"></div>
   </div>
-
-  <!-- mobile save button -->
-  <Teleport v-if="isMounted" to="#saveWrapperMobile">
-    <button type="button" class="btn btn-secondary" @click="saveImage">
-      Save
-      <i class="bi bi-save ms-1"></i>
-    </button>
-  </Teleport>
-
-  <!-- desktop save button -->
-  <Teleport v-if="isMounted" to="#saveWrapperDesktop">
-    <button type="button" class="btn btn-secondary mt-3" @click="saveImage">
-      Save Full Size
-      <i class="bi bi-save ms-2"></i>
-    </button>
-  </Teleport>
 </template>
 
+<script setup>
+/* global Glitch */
+import { ref, watch, onMounted, onBeforeUnmount, inject } from 'vue'
+import p5 from 'p5'
+import { debounce } from '@/helpers/debounce'
+import { getBlendConstant } from '@/helpers/blendMode'
+import { sortPixels } from '@/helpers/pixelSort'
+import { generateTimestamp } from '@/helpers/timestamp'
 
-<script>
-//p5 import
-import p5 from "p5";
-//debounce
-import { debounce } from 'vue-debounce'
+const sketchData = inject('sketchData')
+const isMobile = ref(window.innerWidth <= 768)
+let p5Instance = null
 
-export default {
-  props: {
-    byteFindVal: Number,
-    byteRepVal: Number,
-    numRandomBytes: Number,
-    quantTableByte: Number,
-    loadQuality: Number,
-    imgSrc: String,
-    imgW: Number,
-    imgH: Number,
-    sketchParent: String,
-    glitchExtType: String,
-    glitchType: String,
-    limitBytesStart: Number,
-    limitBytesEnd: Number,
-    windowWidth: Number,
-    blended: Boolean,
-    blendMode: String,
-  },
+function onResize() {
+  const nowMobile = window.innerWidth <= 768
+  if (nowMobile !== isMobile.value) {
+    isMobile.value = nowMobile
+  }
+}
 
-  data() {
-    return {
-      myp5: {}, //p5 object after sketch is loaded and drawn
-      isMounted: false, //mounted boolean to make teleport work and a little more readable
-    };
-  },
+function buildSketch() {
+  const config = { ...sketchData }
+  const containerWidth = window.innerWidth
+  const containerHeight = window.innerHeight
+  const parent = document.getElementById(config.sketchParent)
+  const limitStart = config.limitBytesStart / 100
+  const limitEnd = config.limitBytesEnd / 100
+  const quantHex = ('0' + config.quantTableByte.toString(16)).slice(-2)
+  const quality = config.loadQuality / 100
+  const mobile = isMobile.value
+  let originalImage
 
-  methods: {
-	  //runs the preload, setup, draw and glitch function, and sets it to the parent element provided
-    buildSketch(elm, p) {
-      let containerWidth = this.$refs.sketchWrapper.clientWidth;
-      let containerHeight = window.innerHeight;
-      let parent = document.getElementById(elm);
-      let limitBytesStart = this.limitBytesStart / 100;
-      let limitBytesEnd = this.limitBytesEnd / 100;
-      let quantTableByte = ('0' + this.quantTableByte.toString(16)).slice(-2);
-      let loadQuality = this.loadQuality / 100;
-      let isMobile = this.isMobile;
-      let img0;
+  p5Instance = new p5(function (sketch) {
+    sketch.preload = () => {
+      sketch.glitch = new Glitch(sketch)
+      sketch.glitch.loadType(config.glitchExtType)
+      sketch.glitch.loadQuality(quality)
+      originalImage = sketch.loadImage(config.imgSrc)
+      sketch.glitch.loadImage(config.imgSrc, () => sketch.glitched())
+    }
 
-      this.myp5 = new p5(function (sketch) {
-		  //loads the image and glitches it, so it will be available before the noLoop function is called
-		  //It also gives a nice loading message and breaks up the stages to be more understandable
-        sketch.preload = () => {
-          sketch.glitch = new Glitch(sketch); // new glitch object
-          sketch.glitch.loadType(p.glitchExtType);
-          sketch.glitch.loadQuality(loadQuality);
-          img0 = sketch.loadImage(p.imgSrc); //load a copy of the original image for blending later
-          sketch.glitch.loadImage(p.imgSrc, function () { //load the image for glitching
-            sketch.glitched(); //callback to glitch an image when its loaded
-          });
-        };
-		  //sets up the canvas for displaying the image
-        sketch.setup = () => {
-          sketch.createCanvas(containerWidth, containerHeight - 10);
-          sketch.pixelDensity(1); //for mobile
-           //on mobile devices, start the image right after the navbar (like for longer phone images for instance)
-		   //otherwise center the image 
-		  if (isMobile) {
-            sketch.imageMode(sketch.CORNER);
-          } else {
-            sketch.imageMode(sketch.CENTER);
-          }
-          sketch.glitch.errors(false); //I know what I'm doing to the image is wrong
-          sketch.disableFriendlyErrors = true; //We're friendly but still..
-          sketch.noLoop(); //only draw the image once, rather than continuing to try to animate it
-        };
-		  //draw the image on the canvas we just setup
-        sketch.draw = () => {
-			//blend first so we can save thos ebytes to buffer later for saving
-			//if we blend (or not) first, we can also save a little computation power not resizing our original image for display
-			//there could be a better way for this, but I just couldnt figure out how to turn a string into a constant
-          if (p.blended) {
-            switch (p.blendMode) {
-              case "LIGHTEST":
-                sketch.glitch.image.blend( img0, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, sketch.LIGHTEST );
-                break;
+    sketch.setup = () => {
+      sketch.createCanvas(containerWidth, containerHeight)
+      sketch.pixelDensity(1)
+      sketch.imageMode(mobile ? sketch.CORNER : sketch.CENTER)
+      sketch.glitch.errors(false)
+      sketch.disableFriendlyErrors = true
+      sketch.noLoop()
+    }
 
-              case "DARKEST":
-                sketch.glitch.image.blend( img0, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, sketch.DARKEST );
-                break;
+    sketch.draw = () => {
+      // Apply blend to glitch image before display
+      if (config.blended) {
+        const blendConst = getBlendConstant(sketch, config.blendMode)
+        const img = sketch.glitch.image
+        img.blend(
+          originalImage,
+          0, 0, img.width, img.height,
+          0, 0, img.width, img.height,
+          blendConst
+        )
+        sketch.glitch.loadImage(sketch.glitch.image)
+      }
 
-              case "DIFFERENCE":
-                sketch.glitch.image.blend( img0, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, sketch.DIFFERENCE );
-                break;
+      // Save full-size bytes before resizing for download
+      sketch.glitch.buffer = sketch.glitch.bytes.slice()
 
-              case "MULTIPY":
-                sketch.glitch.image.blend( img0, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, sketch.MULTIPY );
-                break;
+      // Resize and draw: width-fit on mobile, height-fit on desktop
+      if (mobile) {
+        sketch.glitch.image.resize(containerWidth, 0)
+        sketch.image(sketch.glitch.image, 0, 0)
+      } else {
+        sketch.glitch.image.resize(0, containerHeight)
+        sketch.image(sketch.glitch.image, containerWidth / 2, containerHeight / 2)
+      }
 
-              case "EXCLUSION":
-                sketch.glitch.image.blend( img0, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, sketch.EXCLUSION );
-                break;
+      // Fracture: channel shift post-processing
+      if (config.glitchType === 'channelShift') {
+        applyChannelShift(sketch, config, originalImage, mobile, containerWidth, containerHeight)
+      }
 
-              case "SCREEN":
-                sketch.glitch.image.blend( img0, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, 0, 0, sketch.glitch.image.width, sketch.glitch.image.height, sketch.SCREEN );
-                break;
-            }
-          //load the glitched image if blended 
-          sketch.glitch.loadImage(sketch.glitch.image);
-          }
-          
-		    //make a copy of the glitched bytes in buffer to reconstitute a full size image before saving
-			//otherwise, this gets resized because of Object copying by reference
-          sketch.glitch.buffer = sketch.glitch.bytes.slice();
-			//resize the images to fit the screen
-			//by width for mobile devices, by height for desktop, to try to ensure most pictures fit
-          if (isMobile) {
-            sketch.glitch.image.resize(containerWidth, 0);
-            sketch.image(sketch.glitch.image, 0, 0);
-          } else {
-            sketch.glitch.image.resize(0, containerHeight);
-            sketch.image( sketch.glitch.image, sketch.glitch.image.width / 2, sketch.glitch.image.height / 2 );
-          }
-        };
-		  //THE COOL STUFF
-		  //this is the glitch functions, i.e. what we are actually doing to the image
-        sketch.glitched = function () {
-			//first we constrain destruction to the parameters from the prop we were passed
-          sketch.glitch.limitBytes(limitBytesStart, limitBytesEnd);
-			//we could combine types, but I think it might be easier on the user and UI to generate mostly discrete types that they can layer or re-pe5tle if they like
-          switch (p.glitchType) {
-            case "hexReplace":
-              sketch.glitch.replaceBytes(p.byteFindVal, p.byteRepVal); // swap all decimal byte (initially 100 for 104)
-              sketch.glitch.buildImage();
-              break;
+      // Sift: pixel sort post-processing
+      if (config.glitchType === 'pixelSort') {
+        sortPixels(sketch, config.pixelSortThreshold, config.pixelSortDirection)
+      }
+    }
 
-            case "randomBytes":
-              sketch.glitch.randomBytes(p.numRandomBytes); // set random bytes, throughout data
-              sketch.glitch.buildImage();
-              break;
+    sketch.glitched = function () {
+      // Constrain byte manipulation range for binary glitch modes
+      if (['hexReplace', 'randomBytes', 'byteSwap'].includes(config.glitchType)) {
+        sketch.glitch.limitBytes(limitStart, limitEnd)
+      }
 
-             // modify jpg quantization table
-           case "quantTable":
-              
-                  sketch.glitch.replaceHex("ffdb00430101", "ffdb004301" + quantTableByte); // soo colorful!
-                  console.log(quantTableByte)
-                  sketch.glitch.buildImage();
-                  break;
+      switch (config.glitchType) {
+        case 'hexReplace':
+          sketch.glitch.replaceBytes(config.byteFindVal, config.byteRepVal)
+          break
+        case 'randomBytes':
+          sketch.glitch.randomBytes(config.numRandomBytes)
+          break
+        case 'quantTable':
+          sketch.glitch.replaceHex('ffdb00430101', 'ffdb004301' + quantHex)
+          break
+        case 'quantTable2':
+          sketch.glitch.replaceHex('ffdb00430001', 'ffdb004300' + quantHex)
+          break
+        case 'byteSwap':
+          sketch.glitch.swapBytes(config.byteFindVal, config.byteRepVal)
+          break
+      }
 
-            case "quantTable2" :
-                sketch.glitch.replaceHex('ffdb00430001', 'ffdb004300' + quantTableByte);
-                sketch.glitch.buildImage();
-                break;
+      sketch.glitch.buildImage()
+    }
+  }, parent)
+}
 
-              
-              
-          }
-        };
-      }, parent);
-    },
-	//the save function, that gets called when the save button is bonked
-    saveImage() {
-      this.myp5.glitch.bytes = this.myp5.glitch.buffer.slice(); //copy back our handy buffer
-      this.myp5.glitch.buildImage(function (img) { //build image from that buffer
-        // custom timestamp for exporting
-        let d = new Date();
-        d.setTime(d.getTime() - new Date().getTimezoneOffset() * 60 * 1000);
-        let ts = d
-          .toISOString()
-          .replace(/[^0-9]/g, "")
-          .slice(0, -3);
-        img.save("pe5tle_" + ts); //save rebuilt image in the buildImage callback ^^
-      });
+function applyChannelShift(sketch, config, originalImage, mobile, containerWidth, containerHeight) {
+  sketch.loadPixels()
+  const shiftAmount = config.channelShiftAmount
+  const density = sketch.pixelDensity()
+  const width = sketch.width * density
+  const height = sketch.height * density
+  const pixelsCopy = sketch.pixels.slice()
+  const channelIndex = config.channelShiftChannel === 'R' ? 0
+    : config.channelShiftChannel === 'G' ? 1 : 2
 
-    },
-  },
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const sourceX = x - shiftAmount
+      if (sourceX >= 0 && sourceX < width) {
+        const destIdx = (y * width + x) * 4
+        const srcIdx = (y * width + sourceX) * 4
+        sketch.pixels[destIdx + channelIndex] = pixelsCopy[srcIdx + channelIndex]
+      }
+    }
+  }
+  sketch.updatePixels()
 
-  mounted() {
-	  //build the bear when it starts
-    this.buildSketch(this.sketchParent, this.$props);
-    this.isMounted = true; //see when everything is loaded for our Teleported buttons
-  },
-	// This watcher just removes the old sketch and reruns the build process whenever a prop is changed
-  watch: {
-    $props: {
-      handler(newValue) {
-        this.debouncedWatch(newValue);
-        
-      },
-      deep: true,
-    },
-  },
+  // Blend original on top of the shifted result
+  if (config.blended) {
+    const blendConst = getBlendConstant(sketch, config.blendMode)
+    sketch.blendMode(blendConst)
+    const blendImg = originalImage.get()
+    if (mobile) {
+      blendImg.resize(containerWidth, 0)
+      sketch.image(blendImg, 0, 0)
+    } else {
+      blendImg.resize(0, containerHeight)
+      sketch.image(blendImg, containerWidth / 2, containerHeight / 2)
+    }
+    sketch.blendMode(sketch.BLEND)
+  }
+}
 
-  created() {
-    this.debouncedWatch = debounce((newValue,) => {
-      this.myp5.remove();
-      this.buildSketch(this.sketchParent, newValue);
-    }, 500);
-  },
-  beforeUnmount() {
-    this.debouncedWatch.cancel();
-  },
+function saveImage() {
+  if (!p5Instance) return
+  const ts = generateTimestamp()
 
+  if (sketchData.glitchType === 'channelShift' || sketchData.glitchType === 'pixelSort') {
+    // Pixel-based modes: save directly from canvas
+    p5Instance.saveCanvas('pe5tle_' + ts, 'jpg')
+  } else {
+    // Byte-based modes: rebuild full-size image from buffer
+    p5Instance.glitch.bytes = p5Instance.glitch.buffer.slice()
+    p5Instance.glitch.buildImage((img) => img.save('pe5tle_' + ts))
+  }
+}
 
-  //computing a mobile value to make the code more readable
-  computed: {
-    isMobile() {
-      return this.windowWidth <= 768;
-    },
-  },
-};
+// Debounced rebuild: destroy old sketch and create new one
+const debouncedRebuild = debounce(() => {
+  if (p5Instance) p5Instance.remove()
+  buildSketch()
+}, 500)
+
+// Watch config changes and breakpoint changes
+watch(sketchData, () => debouncedRebuild(), { deep: true })
+watch(isMobile, () => debouncedRebuild())
+
+onMounted(() => {
+  window.addEventListener('resize', onResize)
+  buildSketch()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onResize)
+  debouncedRebuild.cancel()
+  if (p5Instance) p5Instance.remove()
+})
+
+defineExpose({ saveImage })
 </script>
 
+<style scoped>
+.canvas-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.canvas-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.canvas-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--bg-elevated);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.canvas-sketch {
+  width: 100%;
+  height: 100%;
+}
+</style>
