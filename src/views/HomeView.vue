@@ -1,7 +1,6 @@
 <template>
   <div class="app-layout">
     <header class="app-header">
-      <span class="app-logo">Pe5tle</span>
       <router-link class="app-about-link" to="/about">?</router-link>
     </header>
 
@@ -86,27 +85,17 @@ function onSave() {
 .app-header {
   position: fixed;
   top: 0;
-  left: 0;
   right: 0;
   z-index: 100;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 14px 20px;
   pointer-events: none;
-  background: linear-gradient(to bottom, rgba(15, 18, 25, 0.7) 0%, transparent 100%);
 }
 
 .app-header > * {
   pointer-events: auto;
-}
-
-.app-logo {
-  font-family: var(--font-brand);
-  color: var(--accent);
-  font-size: 22px;
-  font-weight: 700;
-  text-shadow: 0 0 24px rgba(226, 52, 171, 0.4);
 }
 
 .app-about-link {

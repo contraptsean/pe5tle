@@ -1,47 +1,79 @@
 <template>
   <div
     ref="drawerEl"
-    class="drawer"
-    :class="{ 'drawer--expanded': isExpanded, 'drawer--dragging': isDragging }"
-    :style="drawerStyle"
+    :class="[
+      'drawer',
+      isMobile
+        ? ['is-mobile', { 'drawer--expanded': isExpanded, 'drawer--dragging': isDragging }]
+        : ['is-desktop', { 'panel--collapsed': !isPanelExpanded }]
+    ]"
+    :style="isMobile ? drawerStyle : null"
   >
-    <!-- Drag Handle -->
-    <div
-      class="drawer__header"
-      @touchstart.passive="onTouchStart"
-      @touchmove.passive="onTouchMove"
-      @touchend="onTouchEnd"
-      @mousedown="onMouseDown"
-    >
-      <div class="drawer__handle">
-        <div class="drawer__handle-bar"></div>
+    <!-- Mobile chrome: drag handle + summary bar -->
+    <template v-if="isMobile">
+      <div
+        class="drawer__header"
+        @touchstart.passive="onTouchStart"
+        @touchmove.passive="onTouchMove"
+        @touchend="onTouchEnd"
+        @mousedown="onMouseDown"
+      >
+        <div class="drawer__handle">
+          <div class="drawer__handle-bar"></div>
+        </div>
       </div>
-    </div>
 
-    <!-- Summary Bar (always visible) -->
-    <div class="drawer__summary" @click="toggleDrawer">
-      <span class="drawer__mode-badge">{{ currentModeName }}</span>
-      <div class="drawer__quick-actions">
-        <label class="btn drawer__icon-btn" for="fileUploadCollapsed">
-          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-            <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/>
-          </svg>
-        </label>
-        <input
-          id="fileUploadCollapsed"
-          type="file"
-          accept="image/png, image/jpeg"
-          style="display: none"
-          @change="emit('file-change', $event)"
-          @click.stop
-        />
-        <button class="btn drawer__icon-btn" @click.stop="emit('save')">
-          <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z"/>
-          </svg>
-        </button>
+      <div class="drawer__summary" @click="toggleDrawer">
+        <span class="drawer__mode-badge">{{ currentModeName }}</span>
+        <div class="drawer__quick-actions">
+          <label class="btn drawer__icon-btn" for="fileUploadCollapsed">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+              <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/>
+            </svg>
+          </label>
+          <input
+            id="fileUploadCollapsed"
+            type="file"
+            accept="image/png, image/jpeg"
+            style="display: none"
+            @change="emit('file-change', $event)"
+            @click.stop
+          />
+          <button class="btn drawer__icon-btn" @click.stop="emit('save')">
+            <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z"/>
+            </svg>
+          </button>
+        </div>
       </div>
+    </template>
+
+    <!-- Desktop chrome: icon strip -->
+    <div v-else class="panel__strip">
+      <button class="panel__toggle" @click="togglePanel" :title="isPanelExpanded ? 'Collapse' : 'Expand'">
+        <svg class="panel__toggle-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+        </svg>
+      </button>
+      <label class="panel__strip-btn btn" for="fileUploadStrip" title="Upload image">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+          <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/>
+        </svg>
+      </label>
+      <input
+        id="fileUploadStrip"
+        type="file"
+        accept="image/png, image/jpeg"
+        style="display: none"
+        @change="emit('file-change', $event)"
+      />
+      <button class="panel__strip-btn btn" @click="emit('save')" title="Save full size">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z"/>
+        </svg>
+      </button>
     </div>
 
     <!-- Content (always rendered, clipped by overflow) -->
@@ -172,7 +204,7 @@
 </template>
 
 <script setup>
-import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, inject, onMounted, onBeforeUnmount } from 'vue'
 import { useDrawerDrag } from '@/composables/useDrawerDrag'
 import HexReplaceControls from '@/components/controls/HexReplaceControls.vue'
 import RandomBytesControls from '@/components/controls/RandomBytesControls.vue'
@@ -192,6 +224,26 @@ const {
   toggleDrawer, collapse,
   onTouchStart, onTouchMove, onTouchEnd, onMouseDown,
 } = useDrawerDrag()
+
+// isMobile tracking (same pattern as CanvasMain.vue)
+const isMobile = ref(window.innerWidth <= 768)
+
+function onResize() {
+  const nowMobile = window.innerWidth <= 768
+  if (nowMobile !== isMobile.value) isMobile.value = nowMobile
+}
+
+// Desktop panel state — open by default
+const isPanelExpanded = ref(true)
+
+function togglePanel() {
+  isPanelExpanded.value = !isPanelExpanded.value
+}
+
+// Reset to open when switching back to desktop
+watch(isMobile, (nowMobile) => {
+  if (!nowMobile) isPanelExpanded.value = true
+})
 
 const blendModes = ['DARKEST', 'LIGHTEST', 'DIFFERENCE', 'MULTIPLY', 'EXCLUSION', 'SCREEN']
 
@@ -229,13 +281,20 @@ function selectMode(mode) {
 }
 
 function onClickOutside(e) {
+  if (!isMobile.value) return
   if (isExpanded.value && drawerEl.value && !drawerEl.value.contains(e.target)) {
     collapse()
   }
 }
 
-onMounted(() => document.addEventListener('click', onClickOutside))
-onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
+onMounted(() => {
+  document.addEventListener('click', onClickOutside)
+  window.addEventListener('resize', onResize)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onClickOutside)
+  window.removeEventListener('resize', onResize)
+})
 </script>
 
 <style scoped>
@@ -482,5 +541,89 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside))
   padding: 12px;
   font-size: 14px;
   font-weight: 600;
+}
+
+/* === Desktop Side Panel === */
+.is-desktop {
+  bottom: auto;
+  right: auto;
+  top: 0;
+  left: 0;
+  width: var(--panel-expanded-width);
+  height: 100vh;
+  border-radius: 0 var(--panel-radius) var(--panel-radius) 0;
+  box-shadow: 4px 0 40px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: row;
+  transition: width var(--transition-panel);
+}
+
+.is-desktop.panel--collapsed {
+  width: var(--panel-collapsed-width);
+}
+
+.panel__strip {
+  width: var(--panel-collapsed-width);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  gap: 12px;
+  border-right: 1px solid var(--border);
+}
+
+.panel__toggle {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.panel__toggle:hover {
+  color: var(--accent);
+  background: rgba(226, 52, 171, 0.08);
+}
+
+.panel__toggle-icon {
+  transition: transform var(--transition-panel);
+  display: block;
+}
+
+.is-desktop:not(.panel--collapsed) .panel__toggle-icon {
+  transform: rotate(180deg);
+}
+
+.panel__strip-btn {
+  padding: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.panel__strip-btn:hover {
+  color: var(--accent);
+  background: rgba(226, 52, 171, 0.08);
+}
+
+.is-desktop .drawer__content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 16px 32px;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.is-desktop.panel--collapsed .drawer__content {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 </style>

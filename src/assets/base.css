@@ -29,6 +29,12 @@
   --drawer-max-height: 75vh;
   --drawer-radius: 20px 20px 0 0;
 
+  /* Side Panel (desktop) */
+  --panel-collapsed-width: 48px;
+  --panel-expanded-width: 288px;
+  --panel-radius: 16px;
+  --transition-panel: 0.35s var(--ease-out-expo);
+
   /* Transitions */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --transition-fast: 0.15s ease;
